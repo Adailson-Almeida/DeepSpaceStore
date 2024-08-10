@@ -5,10 +5,11 @@
  */
 
 import { createRouter, createWebHistory } from 'vue-router/auto';
-import { routes as autoRoutes } from 'vue-router/auto-routes'; // Renomeado para evitar conflito
+import { routes as autoRoutes } from 'vue-router/auto-routes'; 
 import formUser from '@/pages/formUser.vue';
+import offers from '@/pages/offers.vue';
 
-// Combine as rotas automáticas e manuais em uma única constante 'routes'
+
 const routes = [
   ...autoRoutes,
   {
@@ -16,11 +17,16 @@ const routes = [
     name: 'formUser',
     component: formUser,
   },
+  {
+    path: '/offers',
+    name: 'offers',
+    component: offers,
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes, // Use a constante combinada aqui
+  routes,
 });
 
 router.onError((err, to) => {
