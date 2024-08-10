@@ -45,45 +45,39 @@ const submit = handleSubmit((values) => {
 </script>
 
 <template>
+  <div>
+    <v-img class="mb-5" height="300" src="@/assets/spacelogo.png" />
+  </div>
+
+
+  
+
   <v-container class="d-flex justify-end mt-10">
+
     
     <v-row>
       <v-col cols="12" md="6" lg="4">
-       
-        <form @submit.prevent="submit">
-          <v-text-field
-            v-model="name.value.value"
-            :counter="10"
-            :error-messages="name.errorMessage.value"
-            label="Nome"
-            class="mb-3"
-            style="max-width: 100%"
-          ></v-text-field>
+        <v-card class="mx-auto" max-width="600"  >
+          <form @submit.prevent="submit">
+          <v-text-field v-model="name.value.value" :counter="10" :error-messages="name.errorMessage.value" label="Nome"
+            class="mb-3 ms-6 mt-8 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field
-            v-model="phone.value.value"
-            :counter="7"
-            :error-messages="phone.errorMessage.value"
-            label="Telefone"
-            class="mb-3"
-            style="max-width: 100%"
-          ></v-text-field>
+          <v-text-field v-model="phone.value.value" :counter="7" :error-messages="phone.errorMessage.value"
+            label="Telefone" class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field
-            v-model="email.value.value"
-            :error-messages="email.errorMessage.value"
-            label="E-mail"
-            class="mb-3"
-            style="max-width: 100%"
-          ></v-text-field>
+          <v-text-field v-model="email.value.value" :error-messages="email.errorMessage.value" label="E-mail"
+            class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <div class="d-flex justify-end">
-            <v-btn class="me-2" type="submit"> Salvar </v-btn>
+          <div class="d-flex justify-end mt-8">
+            <v-btn class="me-4 mb-5" type="submit"> Salvar </v-btn>
 
-            <v-btn @click="handleReset"> Cancelar </v-btn>
+            <v-btn class="me-6" @click="handleReset"> Cancelar </v-btn>
           </div>
         </form>
+        </v-card>
+        
       </v-col>
     </v-row>
+  
   </v-container>
 </template>

@@ -13,8 +13,8 @@
 
         <v-col cols="6">
           <v-card append-icon="mdi-shopping" class="py-3 w-75 ms-10" color="light-blue-lighten-1"
-            href="https://vuetifyjs.com/components/all" rel="noopener noreferrer" rounded="lg"
-            subtitle="Confira nossos produtos." target="_blank" title="Ver ofertas" variant="text">
+          :to="{ path: '/offers' }" rel="noopener noreferrer" rounded="lg"
+            subtitle="Confira nossos produtos." title="Ver ofertas" variant="text">
             <template v-slot:title>
               <span class="text-white">Ver ofertas</span>
             </template>
