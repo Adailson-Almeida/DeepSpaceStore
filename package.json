@@ -8,6 +8,7 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@devindex/vue-mask": "^2.0.3",
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-brands-svg-icons": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
@@ -15,6 +16,7 @@
     "@mdi/font": "7.4.47",
     "core-js": "^3.37.1",
     "roboto-fontface": "*",
+    "v-mask": "^2.3.0",
     "vee-validate": "^4.13.2",
     "vue": "^3.4.31",
     "vuetify": "^3.6.11"

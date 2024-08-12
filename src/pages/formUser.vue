@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useField, useForm } from "vee-validate";
 
+
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
@@ -16,7 +17,7 @@ library.add(faCreditCard);
 const { handleSubmit, handleReset } = useForm({
   validationSchema: {
     name: (value) =>
-      value?.length >= 2 ? true : "Name needs to be at least 2 characters.",
+      value?.length >= 2 ? true : "Nome deve conter mais de 2 caracteres.",
     phone: (value) =>
       value?.length > 9 && /^[0-9-]+$/.test(value)
         ? true
@@ -24,7 +25,8 @@ const { handleSubmit, handleReset } = useForm({
     email: (value) =>
       /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)
         ? true
-        : "Must be a valid e-mail.",
+        : "Digite um e-mail válido.",
+    cpf: (value) => (!!value ? true : "Logradouro is required."),
     cep: (value) => (/^[0-9]{8}$/.test(value) ? true : "CEP is required."),
     logradouro: (value) => (!!value ? true : "Logradouro is required."),
     numero: (value) => (!!value ? true : "Logradouro is required."),
@@ -37,6 +39,7 @@ const { handleSubmit, handleReset } = useForm({
 const name = useField("name");
 const phone = useField("phone");
 const email = useField("email");
+const cpf = useField("cpf");
 const cep = useField("cep");
 const logradouro = useField("logradouro");
 const numero = useField("numero");
@@ -126,7 +129,7 @@ function btnCartaoCredito() {
           <v-text-field v-model="name.value.value" :counter="10" :error-messages="name.errorMessage.value"
             label="Nome *" class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field v-model="phone.value.value" :counter="7" :error-messages="phone.errorMessage.value"
+          <v-text-field v-mask="'(##) #####-####'" v-model="phone.value.value" maxlength="15" :error-messages="phone.errorMessage.value"
             label="Telefone *" class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
           <v-text-field v-model="email.value.value" :error-messages="email.errorMessage.value" label="E-mail"
@@ -143,10 +146,10 @@ function btnCartaoCredito() {
         </div>
 
         <form @submit.prevent="submit">
-          <v-text-field v-model="cep.value.value" :counter="10" :error-messages="cep.errorMessage.value" label="CEP *"
+          <v-text-field v-mask="'#####-###'" v-model="cep.value.value" :counter="10" :error-messages="cep.errorMessage.value" label="CEP *"
             class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field v-model="logradouro.value.value" :counter="7" :error-messages="phone.errorMessage.value"
+          <v-text-field v-model="logradouro.value.value" :counter="7" :error-messages="logradouro.errorMessage.value"
             label="Logradouro *" class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
           <!-- Alinhar Número e Complemento lado a lado -->
@@ -184,7 +187,7 @@ function btnCartaoCredito() {
                 </div>
 
                 <v-radio-group class="ms-4">
-                  <v-text-field v-model="name.value.value" :counter="10" :error-messages="name.errorMessage.value"
+                  <v-text-field v-mask="'###.###.###-##'" v-model="cpf.value.value" :counter="14" maxlength="14" :error-messages="cpf.errorMessage.value"
                     label="CPF *" class="mb-1 ms-2 me-6" style="max-width: 80%"></v-text-field>
 
                   <v-radio label="PIX" color="#0e99af" class="ms-3" value="one"><font-awesome-icon :icon="['fab', 'pix']" /></v-radio>
@@ -201,7 +204,7 @@ function btnCartaoCredito() {
                           <v-text-field class="mb-3" v-model="firstname" :counter="10" :rules="nameRules"
                             label="N° do cartão*" hide-details required></v-text-field>
 
-                          <v-text-field class="mb-3" v-model="lastname" :counter="10" :rules="nameRules"
+                          <v-text-field class="mb-3" v-model="lastname" :rules="nameRules"
                             label="Nome impresso no cartão*" hide-details required></v-text-field>
 
                           <v-row>
