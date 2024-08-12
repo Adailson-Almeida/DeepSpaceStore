@@ -6,8 +6,6 @@
       </div>
       <v-img class="mb-5" height="300" src="@/assets/spacelogo.png" />
 
-      <div class="py-4" />
-
       <v-row class="justify-center">
 
 
