@@ -7,10 +7,10 @@
     </div>
     <v-row class="mt-10">
         <v-col cols="12" sm="6" md="4">
-            <v-card class="mx-auto" max-width="400">
-                <v-img class="align-end text-white" height="200" src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+            <v-card class="mx-auto"  max-width="400">
+                <v-img class="align-end text-white" height="400" src="@/assets/AstroFunko.png"
                     cover>
-                    <v-card-title>Top 10 Australian beaches</v-card-title>
+                    <v-card-title>Action Figure Astronauta</v-card-title>
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
@@ -22,8 +22,8 @@
                     <div>Whitsunday Island, Whitsunday Islands</div>
                 </v-card-text>
 
-                <v-card-actions>
-                    <v-btn color="blue" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
+                <v-card-actions class="justify-center mb-4">
+                    <v-btn class="bg-primary" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
                     
                 </v-card-actions>
             </v-card>
@@ -31,9 +31,9 @@
 
         <v-col cols="12" sm="6" md="4">
             <v-card class="mx-auto" max-width="400">
-                <v-img class="align-end text-white" height="200" src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                <v-img class="align-end text-white" height="400" src="@/assets/Rocket.png"
                     cover>
-                    <v-card-title>Top 10 Australian beaches</v-card-title>
+                    <v-card-title>Miniatura Foguete Nasa</v-card-title>
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
@@ -45,17 +45,17 @@
                     <div>Whitsunday Island, Whitsunday Islands</div>
                 </v-card-text>
 
-                <v-card-actions>
-                    <v-btn color="blue" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
+                <v-card-actions class="justify-center mb-4">
+                    <v-btn class="bg-primary" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-col>
 
         <v-col cols="12" sm="6" md="4">
             <v-card class="mx-auto" max-width="400">
-                <v-img class="align-end text-white" height="200" src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+                <v-img class="align-end text-white" height="400" src="@/assets/Telescopio.png"
                     cover>
-                    <v-card-title>Top 10 Australian beaches</v-card-title>
+                    <v-card-title>Telescopio</v-card-title>
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
@@ -67,8 +67,8 @@
                     <div>Whitsunday Island, Whitsunday Islands</div>
                 </v-card-text>
 
-                <v-card-actions>
-                    <v-btn color="blue" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
+                <v-card-actions class="justify-center mb-4">
+                    <v-btn class="bg-primary" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
                 </v-card-actions>
             </v-card>
         </v-col>
