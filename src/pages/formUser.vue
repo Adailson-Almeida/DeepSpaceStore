@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue";
-import { useField, useForm } from "vee-validate";
+import { useField, useForm, useSetFieldValue } from "vee-validate";
 
 
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -17,22 +17,19 @@ library.add(faCreditCard);
 const { handleSubmit, handleReset } = useForm({
   validationSchema: {
     name: (value) =>
-      value?.length >= 2 ? true : "Nome deve conter mais de 2 caracteres.",
-    phone: (value) =>
-      value?.length > 9 && /^[0-9-]+$/.test(value)
-        ? true
-        : "Phone number needs to be at least 9 digits.",
+      value?.length >= 2 ? true : "Nome é obrigatório e deve conter mais de 2 caracteres.",
     email: (value) =>
       /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(value)
         ? true
         : "Digite um e-mail válido.",
-    cpf: (value) => (!!value ? true : "Logradouro is required."),
-    cep: (value) => (/^[0-9]{8}$/.test(value) ? true : "CEP is required."),
-    logradouro: (value) => (!!value ? true : "Logradouro is required."),
-    numero: (value) => (!!value ? true : "Logradouro is required."),
-    bairro: (value) => (!!value ? true : "Bairro is required."),
-    cidade: (value) => (!!value ? true : "Cidade is required."),
-    uf: (value) => (!!value ? true : "UF is required."),
+    phone: (value) => (!!value ? true : "Telefone é obrigatório."),
+    cpf: (value) => (!!value ? true : "CPF é obrigatório."),
+    cep: (value) => (!!value ? true : "CEP é obrigatório."),
+    logradouro: (value) => (!!value ? true : "Logradouro é obrigatório."),
+    numero: (value) => (!!value ? true : "Número é obrigatório."),
+    bairro: (value) => (!!value ? true : "Bairro é obrigatório."),
+    localidade: (value) => (!!value ? true : "Cidade é obrigatório."),
+    uf: (value) => (!!value ? true : "UF é obrigatório."),
   },
 });
 
@@ -41,12 +38,19 @@ const phone = useField("phone");
 const email = useField("email");
 const cpf = useField("cpf");
 const cep = useField("cep");
-const logradouro = useField("logradouro");
-const numero = useField("numero");
-const complemento = useField("complemento");
-const bairro = useField("bairro");
-const cidade = useField("cidade");
-const uf = useField("uf");
+
+// const logradouro = useField("logradouro");
+const { value: logradouro, errorMessage: logradouroError, setValue: setLogradouro } = useField('logradouro');
+//const numero = useField("numero");
+const { value: numero, errorMessage: numeroError, setValue: setNumero } = useField('numero');
+//const complemento = useField("complemento");
+const { value: complemento, setValue: setComplemento } = useField('complemento');
+//const bairro = useField("bairro");
+const { value: bairro, errorMessage: bairroError, setValue: setBairro } = useField('bairro');
+//const cidade = useField("cidade");
+const { value: localidade, errorMessage: localidadeError, setValue: setLocalidade } = useField('localidade');
+//const uf = useField("uf");
+const { value: uf, errorMessage: ufError, setValue: setUf } = useField('uf');
 var dataCard = false;
 
 const dialog = ref(false);
@@ -57,48 +61,72 @@ const submit = handleSubmit((values) => {
 
 const validateAndOpenDialog = () => {
   submit(() => {
-    dialog.value = true; // Open dialog after successful validation
+    dialog.value = true;
   });
 };
 
 const cancelForm = () => {
-  handleReset(); // Reset the form values
-  dialog.value = false; // Close the dialog if open
+  handleReset();
+  dialog.value = false;
 };
 
 function limpa_formulário_cep() {
   logradouro.value = "";
   bairro.value = "";
-  cidade.value = "";
+  localidade.value = "";
   uf.value = "";
 }
 
-function meu_callback(conteudo) {
-  if (!("erro" in conteudo)) {
-    logradouro.value = conteudo.logradouro;
-    bairro.value = conteudo.bairro;
-    cidade.value = conteudo.localidade;
-    uf.value = conteudo.uf;
-  } else {
-    limpa_formulário_cep();
-    alert("CEP não encontrado.");
-  }
-}
+// function meu_callback(conteudo) {
+//   if (!("erro" in conteudo)) {
+//     logradouro.value = conteudo.logradouro;
+//     bairro.value = conteudo.bairro;
+//     cidade.value = conteudo.localidade;
+//     uf.value = conteudo.uf;
+//   } else {
+//     limpa_formulário_cep();
+//     alert("CEP não encontrado.");
+//   }
+// }
 
-function pesquisacep(valor) {
-  const cep = valor.replace(/\D/g, "");
+async function pesquisacep(valor) {
+  console.log("CEP pesquisado:", valor);
+
+  const cep = valor.replace(/\D/g, ""); // Remove qualquer caractere não numérico
 
   if (cep) {
     const validacep = /^[0-9]{8}$/;
     if (validacep.test(cep)) {
-      logradouro.value = "...";
-      bairro.value = "...";
-      cidade.value = "...";
-      uf.value = "...";
+      setLogradouro("");
+      setBairro("");
+      setNumero("");
+      setComplemento("");
+      setLocalidade("");
+      setUf("");
 
-      const script = document.createElement("script");
-      script.src = `https://viacep.com.br/ws/${cep}/json/?callback=meu_callback`;
-      document.body.appendChild(script);
+      try {
+        const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+        const conteudo = await response.json();
+        console.log("Dados recebidos:", conteudo);
+
+        if (!conteudo.erro) {
+          // Ajuste para acessar o valor correto se necessário
+          setLogradouro(conteudo.logradouro || "");
+          console.log("logradouro", logradouro)
+          setBairro(conteudo.bairro || "");
+          setLocalidade(conteudo.localidade || "");
+          setNumero(conteudo.numero || "");
+          setComplemento(conteudo.complemento || "");
+          setUf(conteudo.uf || "");
+        } else {
+          limpa_formulário_cep();
+          alert("CEP não encontrado.");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar o CEP:", error);
+        limpa_formulário_cep();
+        alert("Erro ao buscar o CEP.");
+      }
     } else {
       limpa_formulário_cep();
       alert("Formato de CEP inválido.");
@@ -107,6 +135,7 @@ function pesquisacep(valor) {
     limpa_formulário_cep();
   }
 }
+
 
 function btnCartaoCredito() {
   dataCard = !dataCard;
@@ -126,7 +155,7 @@ function btnCartaoCredito() {
         </div>
 
         <form @submit.prevent="submit">
-          <v-text-field v-model="name.value.value" :counter="10" :error-messages="name.errorMessage.value"
+          <v-text-field v-model="name.value.value" :error-messages="name.errorMessage.value"
             label="Nome *" class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
           <v-text-field v-mask="'(##) #####-####'" v-model="phone.value.value" maxlength="15" :error-messages="phone.errorMessage.value"
@@ -146,31 +175,31 @@ function btnCartaoCredito() {
         </div>
 
         <form @submit.prevent="submit">
-          <v-text-field v-mask="'#####-###'" v-model="cep.value.value" :counter="10" :error-messages="cep.errorMessage.value" label="CEP *"
+          <v-text-field v-mask="'#####-###'" v-model="cep.value.value" @blur="pesquisacep(cep.value.value)" maxlength="9" :error-messages="cep.errorMessage.value" label="CEP *"
             class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field v-model="logradouro.value.value" :counter="7" :error-messages="logradouro.errorMessage.value"
+          <v-text-field v-model="logradouro" :error-messages="logradouroError"
             label="Logradouro *" class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
           <!-- Alinhar Número e Complemento lado a lado -->
           <v-row class="mb-3 ms-3 mt-4 me-3">
             <v-col cols="4">
-              <v-text-field v-model="numero.value.value" :error-messages="email.errorMessage.value" label="Número *"
+              <v-text-field v-model="numero" maxlength="6" label="Número *" :error-messages="numeroError"
                 style="max-width: 100%"></v-text-field>
             </v-col>
             <v-col cols="8">
-              <v-text-field v-model="complemento.value.value" :error-messages="email.errorMessage.value"
+              <v-text-field v-model="complemento"
                 label="Complemento" style="max-width: 100%"></v-text-field>
             </v-col>
           </v-row>
 
-          <v-text-field v-model="bairro.value.value" :error-messages="email.errorMessage.value" label="Bairro *"
+          <v-text-field v-model="bairro"  label="Bairro *" :error-messages="bairroError"
             class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field v-model="cidade.value.value" :error-messages="email.errorMessage.value" label="Cidade *"
+          <v-text-field v-model="localidade"  label="Cidade *" :error-messages="localidadeError"
             class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
-          <v-text-field v-model="uf.value.value" :error-messages="email.errorMessage.value" label="UF *"
+          <v-text-field v-model="uf"  label="UF *" :error-messages="ufError"
             class="mb-3 ms-6 mt-4 me-6" style="max-width: 100%"></v-text-field>
 
           <div class="d-flex justify-end mt-8">
