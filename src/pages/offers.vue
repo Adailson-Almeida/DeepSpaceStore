@@ -14,7 +14,7 @@
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
-                    Number 10
+                    R$ 149,99
                 </v-card-subtitle>
 
                 <v-card-text>
@@ -37,7 +37,7 @@
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
-                    Number 10
+                    R$ 199,99
                 </v-card-subtitle>
 
                 <v-card-text>
@@ -59,7 +59,7 @@
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
-                    Number 10
+                    R$ 599,00
                 </v-card-subtitle>
 
                 <v-card-text>
