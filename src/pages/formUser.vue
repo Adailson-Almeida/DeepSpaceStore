@@ -22,7 +22,6 @@ const { handleSubmit, handleReset, validate } = useForm({
         ? true
         : "Digite um e-mail válido.",
     phone: (value) => (!!value ? true : "Telefone é obrigatório."),
-    cpf: (value) => (!!value ? true : "CPF é obrigatório."),
     cep: (value) => (!!value ? true : "CEP é obrigatório."),
     logradouro: (value) => (!!value ? true : "Logradouro é obrigatório."),
     numero: (value) => (!!value ? true : "Número é obrigatório."),
@@ -37,6 +36,10 @@ const phone = useField("phone");
 const email = useField("email");
 const cpf = useField("cpf");
 const cep = useField("cep");
+const numberCard = useField("numberCard");
+const nameCard = useField("nameCard");
+const validity = useField("validity");
+const securityCode = useField("securityCode");
 
 
 const { value: logradouro, errorMessage: logradouroError, setValue: setLogradouro } = useField('logradouro');
@@ -51,25 +54,44 @@ const { value: localidade, errorMessage: localidadeError, setValue: setLocalidad
 
 const { value: uf, errorMessage: ufError, setValue: setUf } = useField('uf');
 
-const dataCard = false;
+const dataCard = ref(false);
 const valid = ref(true);
 const dialog = ref(false);
 
 const submit = handleSubmit((values, actions) => {
   if (Object.keys(errors.value).length === 0) {
-    // Se não houver erros de validação, retorna true
+    
     return true;
   } else {
-    // Caso contrário, retorna false
+    
     return false;
   }
 });
 
 const validateAndOpenDialog = async () => {
-  const isValid = await submit();
-  console.log("isvalid", isValid)
-  if (isValid) {
-    dialog.value = true;
+  const { valid, errors } = await validate({
+    fields: ["name", "email", "phone", "cep", "logradouro", "numero", "bairro", "localidade", "uf"],
+  });
+
+  console.log("Resultado da validação inicial:", { valid, errors });
+
+  if (valid) {
+    dialog.value = true; 
+  } else {
+    console.log("Existem campos inválidos.", errors);
+  }
+};
+
+
+const validateCpfAndFinalize = async () => {
+  
+  const { valid, errors } = await cpf.validate();
+
+  if (valid) {
+    
+    confirmPayment();
+  } else {
+    console.log("CPF inválido.", errors);
   }
 };
 
@@ -132,7 +154,7 @@ async function pesquisacep(valor) {
 
 
 function btnCartaoCredito() {
-  dataCard = !dataCard;
+  dataCard.value = !dataCard.value;
 }
 </script>
 
@@ -219,17 +241,17 @@ function btnCartaoCredito() {
                       :icon="['fas', 'file-invoice']" /></v-radio>
 
 
-                  <v-checkbox-btn label="CARTÃO DE CRÉDITO" color="#0e99af" v-model="infocard" class="pe-2 ms-3"
+                  <v-checkbox-btn label="CARTÃO DE CRÉDITO" v-model="dataCard" color="#0e99af"  class="pe-2 ms-3"
                     @click="btnCartaoCredito"><font-awesome-icon :icon="['fas', 'credit-card']" /></v-checkbox-btn>
 
                   <v-form v-model="valid">
                     <v-container>
                       <v-row>
                         <v-col cols="12" md="10" v-if="dataCard">
-                          <v-text-field v-mask="'####-####-####-####'" class="mb-3" v-model="firstname"
+                          <v-text-field v-mask="'####-####-####-####'" class="mb-3" v-model="numberCard"
                             :rules="nameRules" label="N° do cartão*" hide-details required></v-text-field>
 
-                          <v-text-field class="mb-3" :rules="nameRules" label="Nome impresso no cartão*" hide-details
+                          <v-text-field class="mb-3" :rules="nameRules" label="Nome impresso no cartão*" v-model="nameCard" hide-details
                             required></v-text-field>
 
                           <v-row>
@@ -252,7 +274,7 @@ function btnCartaoCredito() {
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn text color="" class="bg-primary mb-4" @click="confirmPayment">Finalizar Pedido</v-btn>
+                  <v-btn text color="" class="bg-primary mb-4" @click="validateCpfAndFinalize">Finalizar Pedido</v-btn>
                   <v-btn text class="bg-red mb-4 me-6" @click="cancelForm">Cancelar</v-btn>
                 </v-card-actions>
               </v-card>
