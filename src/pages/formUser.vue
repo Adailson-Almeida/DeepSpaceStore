@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useField, useForm, useSetFieldValue } from "vee-validate";
 
 
@@ -34,7 +34,6 @@ const { handleSubmit, handleReset, validate } = useForm({
 const name = useField("name");
 const phone = useField("phone");
 const email = useField("email");
-const cpf = useField("cpf");
 const cep = useField("cep");
 const numberCard = useField("numberCard");
 const nameCard = useField("nameCard");
@@ -57,13 +56,23 @@ const { value: uf, errorMessage: ufError, setValue: setUf } = useField('uf');
 const dataCard = ref(false);
 const valid = ref(true);
 const dialog = ref(false);
+const cpf = ref({
+  value: '',
+  errorMessage: ''
+});
+
+watch(() => cpf.value.value, (newValue) => {
+  if (cpf.value.errorMessage) {
+    cpf.value.errorMessage = '';
+  }
+});
 
 const submit = handleSubmit((values, actions) => {
   if (Object.keys(errors.value).length === 0) {
-    
+
     return true;
   } else {
-    
+
     return false;
   }
 });
@@ -76,25 +85,103 @@ const validateAndOpenDialog = async () => {
   console.log("Resultado da validação inicial:", { valid, errors });
 
   if (valid) {
-    dialog.value = true; 
+    dialog.value = true;
   } else {
     console.log("Existem campos inválidos.", errors);
   }
 };
 
-
 const validateCpfAndFinalize = async () => {
-  
-  const { valid, errors } = await cpf.validate();
-
-  if (valid) {
-    
+  if (IsValidCPF(cpf.value.value)) {
     confirmPayment();
   } else {
-    console.log("CPF inválido.", errors);
+    console.log("CPF inválido.");
+    cpf.value.errorMessage = "CPF inválido.";
   }
 };
 
+const validCard = [
+  v => !!v || 'O número do cartão é obrigatório',
+  v => /^\d{4}-\d{4}-\d{4}-\d{4}$/.test(v) || 'Formato inválido. Use ####-####-####-####',
+  v => luhnCheck(v.replace(/-/g, '')) || 'Número de cartão inválido'
+];
+
+function luhnCheck(value) {
+  let sum = 0;
+  let shouldDouble = false;
+
+  // Loop através dos dígitos do número do cartão de trás para frente
+  for (let i = value.length - 1; i >= 0; i--) {
+    let digit = parseInt(value.charAt(i), 10);
+
+    if (shouldDouble) {
+      digit *= 2;
+      if (digit > 9) {
+        digit -= 9;
+      }
+    }
+
+    sum += digit;
+    shouldDouble = !shouldDouble;
+  }
+
+  return (sum % 10 === 0);
+}
+
+const confirmPayment = () => {
+
+  console.log("Pagamento confirmado!");
+};
+
+function IsValidCPF(value) {
+  try {
+    const text = value.replace(/[^\d]+/g, '');
+
+    if (text.length != 11) {
+      return false;
+    }
+    for (let i = 0; i < 10; i++) {
+      if (parseFloat(text) == i * 11111111111) {
+        return false;
+      }
+    }
+
+    const text2 = text.substring(0, 9);
+    const text3 = text.substring(9, 11);
+    let num = 0;
+
+    for (let j = 0; j < 9; j++) {
+      num += parseInt(text2[j]) * (10 - j);
+    }
+
+    num = 11 - num % 11;
+    if (num > 9) {
+      num = 0;
+    }
+
+    if (parseInt(text3.substring(0, 1)) != num) {
+      return false;
+    }
+
+    num *= 2;
+    for (let k = 0; k < 9; k++) {
+      num += parseInt(text2[k]) * (11 - k);
+    }
+
+    num = 11 - num % 11;
+    if (num > 9) {
+      num = 0;
+    }
+
+    if (parseInt(text3[1]) != num) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 const cancelForm = () => {
   handleReset();
@@ -102,20 +189,20 @@ const cancelForm = () => {
   dataCard.value = false;
 };
 
-function limpa_formulário_cep() {
+function cleanForm_Cep() {
   logradouro.value = "";
   bairro.value = "";
   localidade.value = "";
   uf.value = "";
 }
 
-async function pesquisacep(valor) {
+async function findZip_Code(valor) {
 
   const cep = valor.replace(/\D/g, "");
 
   if (cep) {
-    const validacep = /^[0-9]{8}$/;
-    if (validacep.test(cep)) {
+    const validcep = /^[0-9]{8}$/;
+    if (validcep.test(cep)) {
       setLogradouro("");
       setBairro("");
       setNumero("");
@@ -125,35 +212,35 @@ async function pesquisacep(valor) {
 
       try {
         const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-        const conteudo = await response.json();
+        const content = await response.json();
 
-        if (!conteudo.erro) {
+        if (!content.erro) {
 
-          setLogradouro(conteudo.logradouro || "");
-          setBairro(conteudo.bairro || "");
-          setLocalidade(conteudo.localidade || "");
-          setNumero(conteudo.numero || "");
-          setComplemento(conteudo.complemento || "");
-          setUf(conteudo.uf || "");
+          setLogradouro(content.logradouro || "");
+          setBairro(content.bairro || "");
+          setLocalidade(content.localidade || "");
+          setNumero(content.numero || "");
+          setComplemento(content.complemento || "");
+          setUf(content.uf || "");
         } else {
-          limpa_formulário_cep();
+          cleanForm_Cep();
           alert("CEP não encontrado.");
         }
       } catch (error) {
-        limpa_formulário_cep();
+        cleanForm_Cep();
         alert("Erro ao buscar o CEP.");
       }
     } else {
-      limpa_formulário_cep();
+      cleanForm_Cep();
       alert("Formato de CEP inválido.");
     }
   } else {
-    limpa_formulário_cep();
+    cleanForm_Cep();
   }
 }
 
 
-function btnCartaoCredito() {
+function btnCred_Card() {
   dataCard.value = !dataCard.value;
 }
 </script>
@@ -192,7 +279,7 @@ function btnCartaoCredito() {
         </div>
 
         <form @submit.prevent="submit">
-          <v-text-field v-mask="'#####-###'" v-model="cep.value.value" @blur="pesquisacep(cep.value.value)"
+          <v-text-field v-mask="'#####-###'" v-model="cep.value.value" @blur="findZip_Code(cep.value.value)"
             maxlength="9" :error-messages="cep.errorMessage.value" label="CEP *" class="mb-3 ms-6 mt-4 me-6"
             style="max-width: 100%"></v-text-field>
 
@@ -231,37 +318,36 @@ function btnCartaoCredito() {
                 </div>
 
                 <v-radio-group class="ms-4">
-                  <v-text-field v-mask="'###.###.###-##'" v-model="cpf.value.value" :counter="14" maxlength="14"
-                    :error-messages="cpf.errorMessage.value" label="CPF *" class="mb-1 ms-2 me-6"
+                  <v-text-field v-mask="'###.###.###-##'" v-model="cpf.value" maxlength="14"
+                    :error-messages="cpf.errorMessage" label="CPF *" class="mb-1 ms-2 me-6"
                     style="max-width: 78%"></v-text-field>
 
-                  <v-radio label="PIX" color="#0e99af" class="ms-3" value="one"><font-awesome-icon
-                      :icon="['fab', 'pix']" /></v-radio>
-                  <v-radio label="BOLETO" color="#0e99af" class="ms-3" value="two"><font-awesome-icon
-                      :icon="['fas', 'file-invoice']" /></v-radio>
+                  <v-checkbox label="PIX" color="#0e99af" class="ms-3" value="one"><font-awesome-icon
+                      :icon="['fab', 'pix']" /></v-checkbox>
+                  <v-checkbox label="BOLETO" color="#0e99af" class="ms-3" value="two"><font-awesome-icon
+                      :icon="['fas', 'file-invoice']" /></v-checkbox>
 
-
-                  <v-checkbox-btn label="CARTÃO DE CRÉDITO" v-model="dataCard" color="#0e99af"  class="pe-2 ms-3"
-                    @click="btnCartaoCredito"><font-awesome-icon :icon="['fas', 'credit-card']" /></v-checkbox-btn>
+                  <v-checkbox-btn label="CARTÃO DE CRÉDITO" v-model="dataCard" color="#0e99af" class="pe-2 ms-3"
+                    @click="btnCred_Card"><font-awesome-icon :icon="['fas', 'credit-card']" /></v-checkbox-btn>
 
                   <v-form v-model="valid">
                     <v-container>
                       <v-row>
                         <v-col cols="12" md="10" v-if="dataCard">
                           <v-text-field v-mask="'####-####-####-####'" class="mb-3" v-model="numberCard"
-                            :rules="nameRules" label="N° do cartão*" hide-details required></v-text-field>
+                            :rules="validCard" label="N° do cartão*" hide-details required></v-text-field>
 
-                          <v-text-field class="mb-3" :rules="nameRules" label="Nome impresso no cartão*" v-model="nameCard" hide-details
-                            required></v-text-field>
+                          <v-text-field class="mb-3" :rules="validNameCard" label="Nome impresso no cartão*"
+                            v-model="nameCard" hide-details required></v-text-field>
 
                           <v-row>
                             <v-col cols="6">
-                              <v-text-field class="mb-3" v-model="validity" :counter="10" :rules="nameRules"
+                              <v-text-field class="mb-3" v-model="validity" :counter="10" :rules="validDateCard"
                                 label="Validade*" hide-details required></v-text-field>
                             </v-col>
 
                             <v-col cols="6">
-                              <v-text-field class="mb-3" v-model="securityCode" :counter="10" :rules="nameRules"
+                              <v-text-field class="mb-3" v-model="securityCode" :counter="10" :rules="validSecurity"
                                 label="Cód. de segurança*" hide-details required></v-text-field>
                             </v-col>
                           </v-row>
