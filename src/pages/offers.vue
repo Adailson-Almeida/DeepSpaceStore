@@ -17,11 +17,6 @@
                     R$ 149,99
                 </v-card-subtitle>
 
-                <v-card-text>
-                    <div>Whitehaven Beach</div>
-                    <div>Whitsunday Island, Whitsunday Islands</div>
-                </v-card-text>
-
                 <v-card-actions class="justify-center mb-4">
                     <v-btn class="bg-primary" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
                     
@@ -37,13 +32,8 @@
                 </v-img>
 
                 <v-card-subtitle class="pt-4">
-                    R$ 199,99
+                    R$ 299,99
                 </v-card-subtitle>
-
-                <v-card-text>
-                    <div>Whitehaven Beach</div>
-                    <div>Whitsunday Island, Whitsunday Islands</div>
-                </v-card-text>
 
                 <v-card-actions class="justify-center mb-4">
                     <v-btn class="bg-primary" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
@@ -61,11 +51,6 @@
                 <v-card-subtitle class="pt-4">
                     R$ 599,00
                 </v-card-subtitle>
-
-                <v-card-text>
-                    <div>Whitehaven Beach</div>
-                    <div>Whitsunday Island, Whitsunday Islands</div>
-                </v-card-text>
 
                 <v-card-actions class="justify-center mb-4">
                     <v-btn class="bg-primary" text="Comprar" :to="{ path: '/form-user' }"></v-btn>
