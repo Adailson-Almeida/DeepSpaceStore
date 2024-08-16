@@ -112,7 +112,7 @@ const validateCpfAndFinalize = async () => {
   }
 };
 
-// Variable to format the CPF
+// Variable to format the number card
 const validCard = [
   v => !!v || 'O número do cartão é obrigatório',
   v => /^\d{4}-\d{4}-\d{4}-\d{4}$/.test(v) || 'Formato inválido. Use ####-####-####-####',
